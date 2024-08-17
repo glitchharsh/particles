@@ -15,26 +15,26 @@ type Coffee struct {
 	ParticleSystem
 }
 
-func ascii(row, col int, counts [][]int) rune {
+func ascii(row, col int, counts [][]int) string {
 	count := counts[row][col]
 	if count < 3 {
-		return ' '
+		return " "
 	}
 	if count < 6 {
-		return '.'
+		return "."
 	}
 	if count < 9 {
-		return ':'
+		return ":"
 	}
 	if count < 12 {
-		return '{'
+		return "{"
 	}
-	return '}'
+	return "}"
 }
 
 func reset(p *Particle, params *ParticleParams) {
 	p.Lifetime = int64(math.Floor(float64(params.MaxLife) * rand.Float64())) 
-	p.Speed = math.Floor(params.MaxSpeed * rand.Float64())
+	p.Speed = params.MaxSpeed * rand.Float64()
 
 	maxX := math.Floor(float64(params.X) / 2)
 	x := math.Max(-maxX, math.Min(rand.NormFloat64(), maxX)) 
@@ -48,7 +48,8 @@ func nextPos(p *Particle, deltaMS int64) {
 		return 
 	}
 	
-	p.Y += p.Speed * (float64(deltaMS) / 1000.0)
+	percent := (float64(deltaMS) / 1000.0)
+	p.Y += p.Speed * percent
 }
 
 func NewCoffee(width, height int) Coffee {
@@ -57,12 +58,15 @@ func NewCoffee(width, height int) Coffee {
 		ParticleSystem: NewParticleSystem(
 			ParticleParams{
 				MaxLife:       7,
-				MaxSpeed:      0.5,
+				MaxSpeed:      1,
 				ParticleCount: 100,
 
 				reset:        reset,
 				ascii:        ascii,
 				nextPosition: nextPos,
+
+				X: width,
+				Y: height,
 			},
 		),
 	}
